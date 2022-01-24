@@ -38,11 +38,5 @@ select {
 
 .equal {
   font-size: 2rem;
-  padding-right: 2rem;
-}
-
-.card-container {
-  width: 500px;
-  background-color: aqua;
-  box-shadow: 0px 0px 15px -5px;
+  padding-right: 4rem;
 }

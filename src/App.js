@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './App.css';
-import CurrencyInput from './CurrencyInput';
-
-const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from './pages/Home';
+import Table from './pages/Table';
 
 function App() {
-  const [currOptions, setCurrOptions] = useState([])
-  console.log(currOptions)
-  useEffect(() => {
-    fetch(curr_API)
-      .then(res => res.json())
-      .then(data =>
-        setCurrOptions([data.base, ...Object.keys(data.rates)]))
-  }, [])
-
   return (
-    <>
-      <h1>Currency Converter</h1>
-      <CurrencyInput currOptions={currOptions}
-      />
-      <div className='equal'>=</div>
-      <CurrencyInput currOptions={currOptions}
-      />
-    </>
+    <Router>
+      <Navbar />
+      <Switch>
+        <Route path='/' exact component={Home} />
+        <Route path='/' exact component={Table} />
+      </Switch>
+    </Router>
   );
 }
 
