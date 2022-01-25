@@ -2,9 +2,9 @@
 	width: 100%;
 	float: left;
 	margin: 0;
-	padding: 0;
+	padding: 10px;
 	list-style: none; 
-  background-color: rgb(107, 107, 107);
+	background-color: #2e4a62;
 }
 
 #nav li {
@@ -13,16 +13,14 @@
 
 #nav li a {
 		display: block;
+    color: white;
 		padding: 8px 15px;
 		text-decoration: none;
 		font-weight: bold;
 		border-right: 1px solid #ccc; 
 }
 
-#nav li a {
-		display: block;
-		padding: 8px 15px;
-		text-decoration: none;
-		font-weight: bold;
-		border-right: 1px solid #ccc; 
+.element {
+	text-align: center;
 }
+

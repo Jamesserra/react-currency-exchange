@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import CurrencyInput from './CurrencyInput'
+import CurrencyInput from './CurrencyInput';
 
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
 
@@ -14,16 +14,18 @@ const Home = () => {
   }, [])
 
   return (
-    <div>
-      <>
-        <h1>Currency Converter</h1>
-        <CurrencyInput currOptions={currOptions}
-        />
-        <div className='equal'>=</div>
-        <CurrencyInput currOptions={currOptions}
-        />
-      </>
-    </div>
+    <>
+      <div className="container">
+        <div className="row card1">
+          <div className="col-12">
+            <h1 className="title">Currency Converter</h1>
+            <CurrencyInput currOptions={currOptions} />
+            <div className='equal text-center'>=</div>
+            <CurrencyInput currOptions={currOptions} />
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 export default Home;

@@ -3,7 +3,7 @@ import React from 'react';
 export default function currencyInput(props) {
   const { currOptions } = props;
   return (
-    <div>
+    <div className='element'>
       <input type="number" className='input' />
       <select>
         {currOptions.map(options => (
