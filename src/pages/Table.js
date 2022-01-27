@@ -2,17 +2,21 @@
 import React, { useEffect, useState } from 'react';
 import TableInput from './TableInput';
 
-
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
 
 const Table = () => {
-  const [currOptions, setCurrOptions] = useState([])
-  console.log(currOptions)
+  const [base, setBase] = useState([])
+  const [exchangeRate, setRates] = useState([])
+  console.log(base)
+  console.log(exchangeRate)
   useEffect(() => {
     fetch(curr_API)
       .then(res => res.json())
-      .then(data =>
-        setCurrOptions([data.base, ...Object.keys(data.rates)]))
+      .then(data => {
+        setBase([data.base, ...Object.keys(data.rates)])
+        setRates(data.rates)
+      })
+
   }, [])
 
   return (
@@ -24,19 +28,17 @@ const Table = () => {
             <TableInput />
             <table className="table table-striped table-hover">
               <thead>
-                <tr>
+                <tr className='text-center'>
                   <th>Currency</th>
                   <th>Exchange Rate</th>
                 </tr>
               </thead>
               <tbody>
                 {
-                  currOptions.map((item) => (
-                    <div>
-                      <tr>
-                        <td>{item}</td>
-                      </tr>
-                    </div>
+                  base.map((item) => (
+                    <tr className='text-center'>
+                      <td>{item}</td>
+                    </tr>
                   ))
                 }
               </tbody>
