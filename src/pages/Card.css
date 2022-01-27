@@ -28,6 +28,7 @@
   height: 475px;
   border: 5px solid #fff;
   align-items: center;
+  overflow-y: auto;
 }
 
 .card1:hover {

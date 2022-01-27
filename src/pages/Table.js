@@ -1,5 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
 import TableInput from './TableInput';
+
 
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
 
@@ -20,7 +22,7 @@ const Table = () => {
           <div className="col-12">
             <h1 className="title">Currency Table</h1>
             <TableInput />
-            <table class="table table-striped table-hover">
+            <table className="table table-striped table-hover">
               <thead>
                 <tr>
                   <th>Currency</th>
@@ -28,18 +30,15 @@ const Table = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>John</td>
-                  <td>Doe</td>
-                </tr>
-                <tr>
-                  <td>Mary</td>
-                  <td>Moe</td>
-                </tr>
-                <tr>
-                  <td>July</td>
-                  <td>Dooley</td>
-                </tr>
+                {
+                  currOptions.map((item) => (
+                    <div>
+                      <tr>
+                        <td>{item}</td>
+                      </tr>
+                    </div>
+                  ))
+                }
               </tbody>
             </table>
           </div>
