@@ -7,8 +7,7 @@ const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
 const Table = () => {
   const [base, setBase] = useState([])
   const [exchangeRate, setRates] = useState([])
-  console.log(base)
-  console.log(exchangeRate)
+
   useEffect(() => {
     fetch(curr_API)
       .then(res => res.json())
@@ -25,19 +24,21 @@ const Table = () => {
         <div className="row card1">
           <div className="col-12">
             <h1 className="title">Currency Table</h1>
-            <TableInput />
+            {/* <TableInput /> */}
+            <select value={base} onChange={base} className="form-control mb-2 text-center">
+              {base.map((item) => <option key={item}>{item}</option>)}</select>
             <table className="table table-striped table-hover">
               <thead>
                 <tr className='text-center'>
-                  <th>Currency</th>
                   <th>Exchange Rate</th>
+                  {/* <th>Exchange Rate</th> */}
                 </tr>
               </thead>
               <tbody>
                 {
-                  base.map((item) => (
-                    <tr className='text-center'>
-                      <td>{item}</td>
+                  Object.keys(exchangeRate).map((code) => (
+                    <tr key={code} className='text-center'>
+                      <td>{code} {exchangeRate[code] * 1}</td>
                     </tr>
                   ))
                 }
