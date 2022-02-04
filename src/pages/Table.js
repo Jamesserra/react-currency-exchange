@@ -23,16 +23,12 @@ class Table extends React.Component {
     fetch(`${curr_API}?from=${base}`)
       .then(res => res.json())
       .then(data => {
-        const rates = Object.keys(data.rates)
-        console.log(data)
-        const setRate = (data.rates)
-        console.log(setRate)
-        this.setState({ rates, base, setRate });
+        this.setState({ rates: data.rates });
       })
   }
 
   render() {
-    const { base, rates, setRate } = this.state;
+    const { base, rates } = this.state;
     return (
       <>
         <div className="container">
@@ -55,16 +51,9 @@ class Table extends React.Component {
                   <tbody>
                     {
                       Object.keys(rates).map((code) => (
-                        <tr key={code} value={setRate} className='text-center'>
-                          <td>{rates[code]}</td>
-                          {
-                            Object.keys(setRate).map((code) => (
-                              <tr key={code} className='text-center'>
-                                <td>{code} {setRate[code] * 1}</td>
-                              </tr>
-                            ))
-                          }
-                          {/* <td>{base}</td> */}
+                        <tr key={code} className='text-center'>
+                          <td>{code}</td>
+                          <td>{rates[code] * 1}</td>
                         </tr>
                       ))
                     }
