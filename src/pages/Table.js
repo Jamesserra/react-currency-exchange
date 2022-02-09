@@ -1,5 +1,6 @@
 import React from 'react';
 import TableInput from './TableInput'
+import { checkStatus, json } from '../utils/fetchUtils';
 
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest';
 
@@ -21,10 +22,15 @@ class Table extends React.Component {
 
   getRates = (base) => {
     fetch(`${curr_API}?from=${base}`)
-      .then(res => res.json())
+      .then(checkStatus)
+      .then(json)
       .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
         this.setState({ rates: data.rates });
       })
+      .catch(error => console.error(error.message));
   }
 
   render() {
@@ -45,9 +51,11 @@ class Table extends React.Component {
                 <table className="table table-striped table-hover">
                   <thead>
                     <tr className='text-center'>
+                      <th>Currency</th>
                       <th>Exchange Rate</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {
                       Object.keys(rates).map((code) => (

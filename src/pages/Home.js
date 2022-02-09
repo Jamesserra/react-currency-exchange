@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CurrencyInput from './CurrencyInput';
+import { checkStatus, json } from '../utils/fetchUtils';
 
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
 
@@ -23,14 +24,19 @@ const Home = () => {
 
   useEffect(() => {
     fetch(curr_API)
-      .then(res => res.json())
+      .then(checkStatus)
+      .then(json)
       .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
         const firstCurrency = Object.keys(data.rates)[0]
         setCurrencyOptions([data.base, ...Object.keys(data.rates)])
         setFromCurrency(data.base)
         setToCurrency(firstCurrency)
         setExchangeRate(data.rates[firstCurrency])
       })
+      .catch(error => console.error(error.message));
   }, [])
 
   useEffect(() => {
