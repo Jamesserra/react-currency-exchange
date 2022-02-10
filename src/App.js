@@ -1,25 +1,21 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.css';
-import './App.css';
-import './pages/Card.css';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Layout from './pages/Layout';
+import './App.css';
 import Home from './pages/Home';
 import Table from './pages/Table';
-import Graph from './pages/Graph';
-import Footer from "./components/Footer";
 
-function App() {
+
+const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Switch>
-        <Route path='/' exact component={Home} />
-        <Route path='/pages/Table' exact component={Table} />
-        <Route path='/pages/Graph' exact component={Graph} />
-        <Route render={() => <h1>404 Not found</h1>} />
-      </Switch>
-      <Footer />
+      <Layout>
+        <Switch>
+          <Route path='/' exact component={Home} />
+          <Route path='/pages/Table' component={Table} />
+          <Route render={() => <h1>404 Not found</h1>} />
+        </Switch>
+      </Layout>
     </Router>
   );
 }

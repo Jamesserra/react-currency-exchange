@@ -1,88 +1,122 @@
-import React, { useEffect, useState } from 'react';
-import CurrencyInput from './CurrencyInput';
+import React from 'react';
 import { checkStatus, json } from '../utils/fetchUtils';
+import TableInput from './TableInput';
 
-const curr_API = 'https://altexchangerateapi.herokuapp.com/latest'
-
-const Home = () => {
-  const [currencyOptions, setCurrencyOptions] = useState([])
-  const [fromCurrency, setFromCurrency] = useState()
-  const [toCurrency, setToCurrency] = useState()
-  const [exchangeRate, setExchangeRate] = useState()
-  const [amount, setAmount] = useState(1)
-  const [amountInFromCurrency, setAmountInFromCurrency] = useState(true)
-
-
-  let toAmount, fromAmount
-  if (amountInFromCurrency) {
-    fromAmount = amount
-    toAmount = (amount * exchangeRate).toFixed(4);
-  } else {
-    toAmount = amount
-    fromAmount = (amount / exchangeRate).toFixed(4);
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      rate: 109.55,
+      baseAcronym: 'USD',
+      baseValue: 1,
+      quoteAcronym: 'EUR',
+      quoteValue: 1 * 109.55,
+      loading: false,
+    };
+  }
+  componentDidMount() {
+    const { baseAcronym, quoteAcronym } = this.state;
+    this.getRate(baseAcronym, quoteAcronym);
   }
 
-  useEffect(() => {
-    fetch(curr_API)
+  getRate = (base, quote) => {
+    this.setState({ loading: true });
+    fetch(`https://altexchangerateapi.herokuapp.com/latest?from=${base}&to=${quote}`)
       .then(checkStatus)
       .then(json)
       .then(data => {
         if (data.error) {
           throw new Error(data.error);
         }
-        const firstCurrency = Object.keys(data.rates)[0]
-        setCurrencyOptions([data.base, ...Object.keys(data.rates)])
-        setFromCurrency(data.base)
-        setToCurrency(firstCurrency)
-        setExchangeRate(data.rates[firstCurrency])
+        const rate = data.rates[quote];
+        this.setState({
+          rate,
+          baseValue: 1,
+          quoteValue: Number((1 * rate).toFixed(3)),
+          loading: false,
+        });
       })
       .catch(error => console.error(error.message));
-  }, [])
-
-  useEffect(() => {
-    if (fromCurrency != null && toCurrency != null) {
-      fetch(`${curr_API}?from=${fromCurrency}&to=${toCurrency}`)
-        .then(res => res.json())
-        .then(data => setExchangeRate(data.rates[toCurrency]))
+  }
+  toBase(amount, rate) {
+    return amount * (1 / rate);
+  }
+  toQuote(amount, rate) {
+    return amount * rate;
+  }
+  convert(amount, rate, equation) {
+    const input = parseFloat(amount);
+    if (Number.isNaN(input)) {
+      return '';
     }
-  }, [fromCurrency, toCurrency])
-
-  function handleFromAmountChange(e) {
-    setAmount(e.target.value)
-    setAmountInFromCurrency(true)
+    return equation(input, rate).toFixed(3);
   }
-
-  function handleToAmountChange(e) {
-    setAmount(e.target.value)
-    setAmountInFromCurrency(false)
+  changeBaseAcronym = (event) => {
+    const baseAcronym = event.target.value;
+    this.setState({ baseAcronym });
+    this.getRate(baseAcronym, this.state.quoteAcronym)
   }
-
-  return (
-    <>
-      <div className="container">
-        <div className="row card1">
-          <div className="col-12">
-            <h1 className="title">Currency Converter</h1>
-            <CurrencyInput
-              currencyOptions={currencyOptions}
-              selectedCurrency={fromCurrency}
-              onChangeCurrency={e => setFromCurrency(e.target.value)}
-              onChangeAmount={handleFromAmountChange}
-              amount={fromAmount}
-            />
-            <div className='equal text-center'>=</div>
-            <CurrencyInput
-              currencyOptions={currencyOptions}
-              selectedCurrency={toCurrency}
-              onChangeCurrency={e => setToCurrency(e.target.value)}
-              onChangeAmount={handleToAmountChange}
-              amount={toAmount}
-            />
-          </div>
+  changeBaseValue = (event) => {
+    const quoteValue = this.convert(event.target.value, this.state.rate, this.toQuote);
+    this.setState({
+      baseValue: event.target.value,
+      quoteValue,
+    });
+  }
+  changeQuoteAcronym = (event) => {
+    const quoteAcronym = event.target.value;
+    this.setState({ quoteAcronym });
+    this.getRate(this.state.baseAcronym, quoteAcronym);
+  }
+  changeQuoteValue = (event) => {
+    const baseValue = this.convert(event.target.value, this.state.rate, this.toBase);
+    this.setState({
+      quoteValue: event.target.value,
+      baseValue,
+    });
+  }
+  render() {
+    const { rate, baseAcronym, baseValue, quoteAcronym, quoteValue, loading } = this.state;
+    const currencyOptions = Object.keys(TableInput).map(currencyAcronym => <option key={currencyAcronym} value={currencyAcronym}>{currencyAcronym}</option>);
+    return (
+      <React.Fragment>
+        <div className="text-center p-3">
+          <h2 className="mb-2">Currency Converter</h2>
+          <h4>1 {baseAcronym} to 1 {quoteAcronym} = {rate.toFixed(4)} {TableInput[quoteAcronym].name}</h4>
         </div>
-      </div>
-    </>
-  );
+        <form className="row p-3 bg-light exchange justify-content-center">
+          <div className="form-group col-md-5 mb-0">
+            <select value={baseAcronym} onChange={this.changeBaseAcronym} className="form-control form-control-lg mb-2" disabled={loading}>
+              {currencyOptions}
+            </select>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <div className="input-group-text">{TableInput[baseAcronym].symbol}</div>
+              </div>
+              <input id="base" className="form-control" value={baseValue} onChange={this.changeBaseValue} type="number" />
+            </div>
+            <small className="text-secondary">{TableInput[baseAcronym].name}</small>
+          </div>
+          <div className="col-md-2 py-3 d-flex justify-content-center align-items-center">
+            <h3>=</h3>
+          </div>
+          <div className="form-group col-md-5 mb-0">
+            <select value={quoteAcronym} onChange={this.changeQuoteAcronym} className="form-control form-control-lg mb-2" disabled={loading}>
+              {currencyOptions}
+            </select>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <div className="input-group-text">{TableInput[quoteAcronym].symbol}</div>
+              </div>
+              <input id="quote" className="form-control" value={quoteValue} onChange={this.changeQuoteValue} type="number" />
+            </div>
+            <small className="text-secondary">{TableInput[quoteAcronym].name}</small>
+          </div>
+        </form>
+      </React.Fragment>
+    )
+  }
 }
+
 export default Home;
 
