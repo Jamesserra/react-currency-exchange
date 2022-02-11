@@ -8,7 +8,6 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     const params = new URLSearchParams(props.location.search);
-    console.log(props.location.search)
     this.state = {
       rate: 1,
       baseAcronym: params.get('base') || 'USD',
