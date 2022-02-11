@@ -1,13 +1,14 @@
 import React from 'react';
-import TableInput from './TableInput'
+import TableInput from './TableInput';
 import { checkStatus, json } from '../utils/fetchUtils';
-import { Link } from "react-router-dom";
 
+import CurrencyTable from './CurrencyTable'
 const curr_API = 'https://altexchangerateapi.herokuapp.com/latest';
 
 class Table extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    console.log(props.location.search);
     this.state = {
       base: 'USD',
       rates: '',
@@ -17,7 +18,7 @@ class Table extends React.Component {
     this.getRates(this.state.base);
   }
   setBase = (e) => {
-    this.setState({ base: e.value });
+    this.setState({ base: e.target.value });
     this.getRates(e.target.value);
   }
 
@@ -36,34 +37,18 @@ class Table extends React.Component {
 
   render() {
     const { base, rates } = this.state;
+
     return (
       <>
         <div className="row">
           <div className="col-12">
             <h1 className="text-center">Currency Table</h1>
             <form className='d-flex justify-content-center'>
-              <select value={base} onChange={this.setBase} className="form-control align-items-center text-center mb-2">
+              <select value={base} onChange={this.setBase} className="form-control text-center mb-2">
                 {Object.keys(TableInput).map(option => <option key={option} value={option}>{option} - {TableInput[option].name}</option>)}
               </select>
             </form>
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr className='text-center'>
-                  <th>Currency</th>
-                  <th>Exchange Rate</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  Object.keys(rates).map((code) => (
-                    <tr key={code} className='text-center'>
-                      <td>{TableInput[code].name}</td>
-                      <td>{TableInput[code].symbol} {rates[code] * 1}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
+            <CurrencyTable base={base} rates={rates} />
           </div>
         </div>
       </>

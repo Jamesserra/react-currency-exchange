@@ -1,22 +1,28 @@
 import React from 'react';
+import Chart from 'chart.js/auto';
 import { checkStatus, json } from '../utils/fetchUtils';
 import TableInput from './TableInput';
+
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
+    const params = new URLSearchParams(props.location.search);
+    console.log(props.location.search)
     this.state = {
       rate: 1,
-      baseAcronym: 'USD',
+      baseAcronym: params.get('base') || 'USD',
       baseValue: 1,
-      quoteAcronym: 'EUR',
+      quoteAcronym: params.get('quote') || 'EUR',
       quoteValue: 1,
       loading: false,
     };
+    this.chartRef = React.createRef();
   }
   componentDidMount() {
     const { baseAcronym, quoteAcronym } = this.state;
     this.getRate(baseAcronym, quoteAcronym);
+    this.getHistoricalRates(baseAcronym, quoteAcronym);
   }
 
   getRate = (base, quote) => {
@@ -32,12 +38,58 @@ class Home extends React.Component {
         this.setState({
           rate,
           baseValue: 1,
-          quoteValue: Number((1 * rate).toFixed(3)),
+          quoteValue: Number((1 * rate).toFixed(6)),
           loading: false,
         });
       })
       .catch(error => console.error(error.message));
   }
+
+  getHistoricalRates = (base, quote) => {
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date((new Date()).getTime() - (30 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+
+    fetch(`https://altexchangerateapi.herokuapp.com/${startDate}..${endDate}?from=${base}&to=${quote}`)
+      .then(checkStatus)
+      .then(json)
+      .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        const chartLabels = Object.keys(data.rates);
+        const chartData = Object.values(data.rates).map(rate => rate[quote]);
+        const chartLabel = `${base}/${quote}`;
+        this.buildChart(chartLabels, chartData, chartLabel);
+      })
+      .catch(error => console.error(error.message));
+  }
+
+  buildChart = (labels, data, label) => {
+    const chartRef = this.chartRef.current.getContext("2d");
+
+    if (typeof this.chart !== "undefined") {
+      this.chart.destroy();
+    }
+
+    this.chart = new Chart(this.chartRef.current.getContext("2d"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: label,
+            data,
+            fill: false,
+            tension: 0,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+      }
+    })
+  }
+
   toBase(amount, rate) {
     return amount * (1 / rate);
   }
@@ -49,12 +101,13 @@ class Home extends React.Component {
     if (Number.isNaN(input)) {
       return '';
     }
-    return equation(input, rate).toFixed(3);
+    return equation(input, rate).toFixed(6);
   }
   changeBaseAcronym = (event) => {
     const baseAcronym = event.target.value;
     this.setState({ baseAcronym });
     this.getRate(baseAcronym, this.state.quoteAcronym)
+    this.getHistoricalRates(baseAcronym, this.state.quoteAcronym);
   }
   changeBaseValue = (event) => {
     const quoteValue = this.convert(event.target.value, this.state.rate, this.toQuote);
@@ -67,6 +120,7 @@ class Home extends React.Component {
     const quoteAcronym = event.target.value;
     this.setState({ quoteAcronym });
     this.getRate(this.state.baseAcronym, quoteAcronym);
+    this.getHistoricalRates(this.state.baseAcronym, quoteAcronym);
   }
   changeQuoteValue = (event) => {
     const baseValue = this.convert(event.target.value, this.state.rate, this.toBase);
@@ -85,7 +139,7 @@ class Home extends React.Component {
           <h2 className="mb-2">Currency Converter</h2>
           <h4>1 {TableInput[baseAcronym].name}  = {rate.toFixed(4)} {TableInput[quoteAcronym].name}</h4>
         </div>
-        <form className="row p-3 bg-light exchange justify-content-center">
+        <form className="row p-3 mb-2 bg-light exchange justify-content-center">
           <div className="form-group col-md-5 mb-0">
             <select value={baseAcronym} onChange={this.changeBaseAcronym} className="form-control form-control-lg mb-2" disabled={loading}>
               {currencyOptions}
@@ -111,7 +165,9 @@ class Home extends React.Component {
               <input id="quote" className="form-control" value={quoteValue} onChange={this.changeQuoteValue} type="number" />
             </div>
           </div>
+          <canvas ref={this.chartRef} />
         </form>
+
       </React.Fragment>
     )
   }

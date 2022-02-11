@@ -35,12 +35,14 @@ body {
   list-style: none;
   margin-top: 1rem;
   padding-right: 1.2em;
+  color: white;
 }
 
 .nav__link:link,
-.nav__link:visited {
+.nav__link:visited
+  {
   font-weight: 400;
-  color: white;
+  color: inherit;
   text-decoration: none;
   display: block;
   transition: all 0.3s;
