@@ -6,11 +6,11 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rate: 109.55,
+      rate: 1,
       baseAcronym: 'USD',
       baseValue: 1,
       quoteAcronym: 'EUR',
-      quoteValue: 1 * 109.55,
+      quoteValue: 1,
       loading: false,
     };
   }
@@ -77,12 +77,13 @@ class Home extends React.Component {
   }
   render() {
     const { rate, baseAcronym, baseValue, quoteAcronym, quoteValue, loading } = this.state;
-    const currencyOptions = Object.keys(TableInput).map(currencyAcronym => <option key={currencyAcronym} value={currencyAcronym}>{currencyAcronym}</option>);
+    const currencyOptions = Object.keys(TableInput).map(currencyAcronym => <option key={currencyAcronym} value={currencyAcronym}>{currencyAcronym} - {TableInput[currencyAcronym].name}</option>);
+
     return (
       <React.Fragment>
         <div className="text-center p-3">
           <h2 className="mb-2">Currency Converter</h2>
-          <h4>1 {baseAcronym} to 1 {quoteAcronym} = {rate.toFixed(4)} {TableInput[quoteAcronym].name}</h4>
+          <h4>1 {TableInput[baseAcronym].name}  = {rate.toFixed(4)} {TableInput[quoteAcronym].name}</h4>
         </div>
         <form className="row p-3 bg-light exchange justify-content-center">
           <div className="form-group col-md-5 mb-0">
@@ -95,7 +96,6 @@ class Home extends React.Component {
               </div>
               <input id="base" className="form-control" value={baseValue} onChange={this.changeBaseValue} type="number" />
             </div>
-            <small className="text-secondary">{TableInput[baseAcronym].name}</small>
           </div>
           <div className="col-md-2 py-3 d-flex justify-content-center align-items-center">
             <h3>=</h3>
@@ -110,7 +110,6 @@ class Home extends React.Component {
               </div>
               <input id="quote" className="form-control" value={quoteValue} onChange={this.changeQuoteValue} type="number" />
             </div>
-            <small className="text-secondary">{TableInput[quoteAcronym].name}</small>
           </div>
         </form>
       </React.Fragment>

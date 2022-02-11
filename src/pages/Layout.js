@@ -12,7 +12,7 @@ const Layout = (props) => {
               <li className="nav__item">
                 <Link className='nav__link' to="/">Home</Link>
               </li>
-              <span class="divider" />
+              <span className="divider" />
               <li className="nav__item">
                 <Link className='nav__link' to="../pages/Table">Table</Link>
               </li>

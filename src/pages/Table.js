@@ -40,11 +40,10 @@ class Table extends React.Component {
       <>
         <div className="row">
           <div className="col-12">
-            <h1 className="title">Currency Table</h1>
-            <form className='d-inline-flex justify-content-center'>
-              <h4 className='mt-3'>1</h4>
-              <select value={base} onChange={this.setBase} className="form-control text-center w-75 mb-2">
-                {Object.keys(TableInput).map(option => <option key={option} value={option}>{option}</option>)}
+            <h1 className="text-center">Currency Table</h1>
+            <form className='d-flex justify-content-center'>
+              <select value={base} onChange={this.setBase} className="form-control align-items-center text-center mb-2">
+                {Object.keys(TableInput).map(option => <option key={option} value={option}>{option} - {TableInput[option].name}</option>)}
               </select>
             </form>
             <table className="table table-striped table-hover">
@@ -58,8 +57,8 @@ class Table extends React.Component {
                 {
                   Object.keys(rates).map((code) => (
                     <tr key={code} className='text-center'>
-                      <td>{code}</td>
-                      <td>{rates[code] * 1}</td>
+                      <td>{TableInput[code].name}</td>
+                      <td>{TableInput[code].symbol} {rates[code] * 1}</td>
                     </tr>
                   ))
                 }
