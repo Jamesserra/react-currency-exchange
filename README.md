@@ -1,7 +1,6 @@
-# Demo
+# Live Demo
 
 https://glacial-ravine-77415.herokuapp.com/
-
 
 # Getting Started with Create React App
 
